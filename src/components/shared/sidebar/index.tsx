@@ -12,7 +12,7 @@ import { ShoppingCart } from "lucide-react";
 export default function Sidebar() {
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button variant={"outline"}>
           <ShoppingCart />
         </Button>

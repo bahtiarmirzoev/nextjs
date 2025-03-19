@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-    const data = await fetch("https://jsonplaceholder.typicode.com/posts");
-    return NextResponse.json(data);
+  const data = {
+    id: 1,
+    name: "John",
+    surname: "Doe",
+    age: 23,
+  };
+  return NextResponse.json(data);
 }
