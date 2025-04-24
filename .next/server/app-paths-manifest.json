@@ -1,6 +1,0 @@
-{
-  "/api/products/route": "app/api/products/route.js",
-  "/api/navbar/route": "app/api/navbar/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/(withnav)/page": "app/(withnav)/page.js"
-}

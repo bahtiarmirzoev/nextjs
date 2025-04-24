@@ -33,6 +33,7 @@ export const authOptions: AuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
+            
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
                     return null;
@@ -41,8 +42,8 @@ export const authOptions: AuthOptions = {
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email },
                 });
-
-                if (!user || !user.password) {
+                
+                if (!user) {
                     return null;
                 }
 
@@ -65,7 +66,7 @@ export const authOptions: AuthOptions = {
     ],
 
     pages: {
-        signIn: "/auth/signin",
+        signIn: "/auth/sign-in",
     },
 
     session: {
@@ -73,9 +74,16 @@ export const authOptions: AuthOptions = {
     },
 
     callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+
         async session({ session, token }) {
-            if (session.user && token.sub) {
-                session.user.id = token.sub;
+            if (session.user) {
+                session.user.id = token.id as string;
             }
             return session;
         },
