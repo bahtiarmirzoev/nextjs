@@ -35,7 +35,6 @@ export default function SignIn() {
     try {
       const resp = await signIn("credentials", {
         ...data,
-        
         redirect: false,
       });
 

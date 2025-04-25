@@ -6,8 +6,6 @@ import Link from "next/link";
 
 export default function Profile() {
   const { data: session } = useSession();
-  console.log("session", session);
-  // console.log("session user", session?.user);
   
   return (
     <>

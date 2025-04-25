@@ -24,7 +24,6 @@ export const authOptions: AuthOptions = {
         GitHubProvider({
             clientId: process.env.GITHUB_ID || "",
             clientSecret: process.env.GITHUB_SECRET || "",
-            authorization: { params: { scope: "read:user user:email" } },
         }),
 
         CredentialsProvider({
@@ -33,34 +32,31 @@ export const authOptions: AuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
-            
+
             async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
+                try {
+                    if (!credentials?.email || !credentials?.password) return null;
+
+                    const user = await prisma.user.findUnique({
+                        where: { email: credentials.email },
+                    });
+
+                    if (!user) return null;
+
+
+                    const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+                    if (!isPasswordValid) return null;
+
+
+                    return {
+                        id: String(user.id),
+                        email: user.email,
+                        fullName: user.fullName,
+                    };
+
+                } catch {
                     return null;
                 }
-
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email },
-                });
-                
-                if (!user) {
-                    return null;
-                }
-
-                const isPasswordValid = await bcrypt.compare(
-                    credentials.password,
-                    user.password
-                );
-
-                if (!isPasswordValid) {
-                    return null;
-                }
-
-                return {
-                    id: String(user.id),
-                    email: user.email,
-                    fullName: user.fullName,
-                };
             },
         }),
     ],
@@ -74,23 +70,14 @@ export const authOptions: AuthOptions = {
     },
 
     callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-            }
-            return token;
-        },
-
         async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id as string;
+                session.user.id = token.sub as string;
             }
             return session;
         },
 
-        async signIn({ account, profile }) {
-            // Only apply upsert for OAuth logins
-            if (account?.provider === "credentials") return true;
+        async signIn({ profile }) {
 
             if (!profile?.email) return false;
 
