@@ -5,28 +5,26 @@ import useCardStore from "@/store/card-store";
 import { ProductCardProps } from "@/types/interfaces/product-card-props";
 import { MinusIcon, PlusIcon } from "lucide-react";
 
-export default function QuantitySelector({ product }: ProductCardProps) {
-  const {card, updateQuantity } = useCardStore();
+export default function QuantitySelector({
+  product,
+}: {
+  product: ProductCardProps;
+}) {
+  const { card, updateQuantity } = useCardStore();
 
-//   not found cardItem
+  //   not found cardItem
 
   const cardItem = card.find((item) => item.id === product.id);
-  console.log("cardItem", cardItem);
-  
 
   const quantity = cardItem ? cardItem.quantity : 1;
 
   const incrementQuantity = () => {
-    if (cardItem) {
-        
-      // If item exists in cart, update its quantity
-      updateQuantity(product.id, quantity + 1);
-
-    } 
+    updateQuantity(product.id, quantity + 1);
   };
+
   const decrementQuantity = () => {
-    if (cardItem && quantity > 1) {
-      updateQuantity( product.id, quantity - 1 );
+    if (quantity > 1) {
+      updateQuantity(product.id, quantity - 1);
     }
   };
 
